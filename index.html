@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Method Studio - Pro Optimizer</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #0b0c10;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: #14161f;
+            border: 1px solid #232733;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+        .badge {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .drop-zone {
+            border: 2px dashed #2d3748;
+            border-radius: 12px;
+            padding: 24px 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: #1a1d29;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .drop-zone:hover {
+            border-color: #6366f1;
+            background: #202436;
+        }
+        .icon { font-size: 30px; margin-bottom: 6px; }
+        .file-info {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+            word-break: break-all;
+        }
+        .file-hint { font-size: 11px; color: #64748b; margin-top: 4px; }
+        input[type="file"] { display: none; }
+        .preview-container {
+            display: none;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+            max-height: 180px;
+            text-align: center;
+        }
+        .preview-container video { width: 100%; max-height: 180px; object-fit: contain; }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: #6366f1;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover:not(:disabled) { background: #4f46e5; }
+        .btn:disabled { background: #2d3748; cursor: not-allowed; color: #718096; }
+        .progress-box {
+            display: none;
+            margin-top: 16px;
+            text-align: left;
+            background: #1a1d29;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #262a3b;
+        }
+        .progress-bar-bg {
+            background: #2d3748;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-bar-fill {
+            background: #6366f1;
+            height: 100%;
+            width: 0%;
+        }
+        .status-text {
+            font-size: 12px;
+            color: #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+        }
+        .result-stats {
+            display: none;
+            margin-top: 14px;
+            font-size: 13px;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .download-btn {
+            display: none;
+            margin-top: 14px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            background: #10b981;
+            color: #fff;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .download-btn:hover { background: #059669; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <span class="badge">TERMUX LOCAL ENGINE</span>
+        <h1>Anime Method Studio</h1>
+        <p class="subtitle">Tối ưu hóa metadata video chuẩn TikTok Method trực tiếp trên trình duyệt di động.</p>
+
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('videoInput').click()">
+            <div class="icon">🎬</div>
+            <div class="file-info" id="fileNameText">Bấm vào đây để chọn file video</div>
+            <div class="file-hint">Hỗ trợ định dạng .mp4, .mov</div>
+        </div>
+        <input type="file" id="videoInput" accept="video/mp4,video/quicktime">
+
+        <div class="preview-container" id="previewContainer">
+            <video id="videoPreview" controls></video>
+        </div>
+
+        <button class="btn" id="processBtn" disabled>Bắt đầu tối ưu Video</button>
+
+        <div class="progress-box" id="progressBox">
+            <div class="status-text">
+                <span id="statusMessage">Đang khởi tạo...</span>
+                <span id="percentText">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="result-stats" id="resultStats"></div>
+        <a id="downloadBtn" class="download-btn">Tải Video Đã Tối Ưu Về Máy</a>
+    </div>
+
+    <!-- Thư viện FFmpeg UMD phiên bản tương thích tốt hơn -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+
+    <script>
+        const { FFmpeg } = FFmpegWASM;
+        const { toBlobURL } = FFmpegUtil;
+
+        let ffmpeg = null;
+        let selectedFile = null;
+
+        const videoInput = document.getElementById('videoInput');
+        const fileNameText = document.getElementById('fileNameText');
+        const previewContainer = document.getElementById('previewContainer');
+        const videoPreview = document.getElementById('videoPreview');
+        const processBtn = document.getElementById('processBtn');
+        const progressBox = document.getElementById('progressBox');
+        const progressBar = document.getElementById('progressBar');
+        const statusMessage = document.getElementById('statusMessage');
+        const percentText = document.getElementById('percentText');
+        const resultStats = document.getElementById('resultStats');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                selectedFile = file;
+                fileNameText.innerText = `${file.name} (${(file.size / (1024*1024)).toFixed(2)} MB)`;
+                
+                const videoUrl = URL.createObjectURL(file);
+                videoPreview.src = videoUrl;
+                previewContainer.style.display = 'block';
+
+                processBtn.disabled = false;
+                downloadBtn.style.display = 'none';
+                resultStats.style.display = 'none';
+            }
+        });
+
+        async function loadEngine() {
+            if (ffmpeg) return ffmpeg;
+            
+            statusMessage.innerText = "Đang tải Engine WASM...";
+            ffmpeg = new FFmpeg();
+            
+            ffmpeg.on('progress', ({ progress }) => {
+                const percent = Math.min(Math.max(Math.round(progress * 100), 0), 100);
+                progressBar.style.width = `${percent}%`;
+                percentText.innerText = `${percent}%`;
+            });
+
+            const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+            await ffmpeg.load({
+                coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+                wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+            });
+
+            return ffmpeg;
+        }
+
+        processBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            try {
+                processBtn.disabled = true;
+                downloadBtn.style.display = 'none';
+                resultStats.style.display = 'none';
+                progressBox.style.display = 'block';
+                progressBar.style.width = '0%';
+                percentText.innerText = '0%';
+
+                const ff = await loadEngine();
+
+                statusMessage.innerText = "Đang đọc dữ liệu video...";
+                const fileData = await selectedFile.arrayBuffer();
+                
+                // Đổi tên file đầu vào thành input.mp4 chuẩn không dấu để tránh lỗi đường dẫn trên điện thoại
+                await ff.writeFile('input.mp4', new Uint8Array(fileData));
+
+                statusMessage.innerText = "Đang remux container Faststart...";
+                
+                // Thực thi lệnh remux chuẩn
+                await ff.exec(['-i', 'input.mp4', '-c', 'copy', '-movflags', '+faststart', 'output.mp4']);
+
+                statusMessage.innerText = "Hoàn tất xử lý!";
+                progressBar.style.width = '100%';
+                percentText.innerText = '100%';
+
+                const outputData = await ff.readFile('output.mp4');
+                const blob = new Blob([outputData.buffer], { type: 'video/mp4' });
+                const url = URL.createObjectURL(blob);
+
+                const newSizeMB = (outputData.length / (1024*1024)).toFixed(2);
+                resultStats.innerText = `Thành công! Dung lượng: ${newSizeMB} MB`;
+                resultStats.style.display = 'block';
+
+                downloadBtn.href = url;
+                downloadBtn.download = `optimized_${selectedFile.name}`;
+                downloadBtn.style.display = 'block';
+
+            } catch (err) {
+                console.error(err);
+                statusMessage.innerText = "Lỗi: " + (err.message || "Trình duyệt chặn bộ nhớ WASM");
+            } finally {
+                processBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
